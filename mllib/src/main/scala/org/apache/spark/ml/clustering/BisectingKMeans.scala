@@ -34,11 +34,13 @@ import org.apache.spark.sql.{DataFrame, Dataset, Row}
 import org.apache.spark.sql.functions.udf
 import org.apache.spark.sql.types.{IntegerType, StructType}
 
+import org.apache.spark.mllib.clustering.ClusteringTreeNode
+
 
 /**
  * Common params for BisectingKMeans and BisectingKMeansModel
  */
-private[clustering] trait BisectingKMeansParams extends Params with HasMaxIter
+trait BisectingKMeansParams extends Params with HasMaxIter
   with HasFeaturesCol with HasSeed with HasPredictionCol with HasDistanceMeasure {
 
   /**
@@ -53,6 +55,10 @@ private[clustering] trait BisectingKMeansParams extends Params with HasMaxIter
   /** @group getParam */
   @Since("2.0.0")
   def getK: Int = $(k)
+  
+   /** @group getParam */
+//  @Since("2.0.0")
+//  def getTest: Int = 100
 
   /**
    * The minimum number of points (if greater than or equal to 1.0) or the minimum proportion
@@ -85,9 +91,10 @@ private[clustering] trait BisectingKMeansParams extends Params with HasMaxIter
  * @param parentModel a model trained by [[org.apache.spark.mllib.clustering.BisectingKMeans]].
  */
 @Since("2.0.0")
-class BisectingKMeansModel private[ml] (
+class BisectingKMeansModel (
     @Since("2.0.0") override val uid: String,
-    private val parentModel: MLlibBisectingKMeansModel
+//    private val parentModel: MLlibBisectingKMeansModel
+     val parentModel: MLlibBisectingKMeansModel
   ) extends Model[BisectingKMeansModel] with BisectingKMeansParams with MLWritable {
 
   @Since("2.0.0")
@@ -121,7 +128,10 @@ class BisectingKMeansModel private[ml] (
 
   @Since("2.0.0")
   def clusterCenters: Array[Vector] = parentModel.clusterCenters.map(_.asML)
-
+  
+  @Since("2.0.0")
+  def mlClusteringTreeRoot: org.apache.spark.mllib.clustering.BisectingKMeansModel = parentModel
+  
   /**
    * Computes the sum of squared distances between the input points and their corresponding cluster
    * centers.
@@ -161,6 +171,7 @@ class BisectingKMeansModel private[ml] (
 }
 
 object BisectingKMeansModel extends MLReadable[BisectingKMeansModel] {
+  
   @Since("2.0.0")
   override def read: MLReader[BisectingKMeansModel] = new BisectingKMeansModelReader
 

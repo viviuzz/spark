@@ -39,11 +39,14 @@ import org.apache.spark.sql.{Row, SparkSession}
  * @param root the root node of the clustering tree
  */
 @Since("1.6.0")
-class BisectingKMeansModel private[clustering] (
-    private[clustering] val root: ClusteringTreeNode,
+class BisectingKMeansModel (
+    val root: ClusteringTreeNode,
     @Since("2.4.0") val distanceMeasure: String
   ) extends Serializable with Saveable with Logging {
 
+  @Since("1.6.0")
+  def clusteringTreeRoot: ClusteringTreeNode = root
+  
   @Since("1.6.0")
   def this(root: ClusteringTreeNode) = this(root, DistanceMeasure.EUCLIDEAN)
 
@@ -117,7 +120,7 @@ class BisectingKMeansModel private[clustering] (
 
 @Since("2.0.0")
 object BisectingKMeansModel extends Loader[BisectingKMeansModel] {
-
+  
   @Since("2.0.0")
   override def load(sc: SparkContext, path: String): BisectingKMeansModel = {
     val (loadedClassName, formatVersion, __) = Loader.loadMetadata(sc, path)

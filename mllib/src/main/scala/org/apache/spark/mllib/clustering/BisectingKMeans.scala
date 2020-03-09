@@ -454,7 +454,8 @@ private object BisectingKMeans extends Serializable {
  * @param children children nodes
  */
 @Since("1.6.0")
-private[clustering] class ClusteringTreeNode private[clustering] (
+//private[clustering] class ClusteringTreeNode private[clustering] (
+class ClusteringTreeNode (
     val index: Int,
     val size: Long,
     private[clustering] val centerWithNorm: VectorWithNorm,
